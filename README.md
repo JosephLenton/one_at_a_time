@@ -1,23 +1,78 @@
 > One At A Time Please
 
-A library for restricting function calls from across multiple threads,
-to only happen one at a time. Forcing your code to run in serial.
+Quick and dirty synchronisation. For forcing a load of functions to only ever run on one thread at a time.
 
-**It is for** ... quick and dirty synchronisation, when you just need it.
-It is not for well thought out synchronisation.
-Specifically I built this for testing. I had about 20 tests, where a couple needed to capture panic information.
-They had to do it 'one at a time'. I wrote this to make that easier.
+# What is for?
+
+Lets say you have a number of functions. They will get called from multiple threads.
+You only want one of them ever called at a time. When that happens you want the rest to all be blocked.
+
+For example; you have a load of tests. You want to run them in parallel, except for four of them. Which should run in serial.
+
+(Single-threaded recursion is still allowed.)
+
+# How does it work?
+
+Internally there is a big lock. Functions marked with `one_at_a_time` will aquire that big lock. When they have it, then everyone else is blocked.
 
 # API
 
- - `#[one_at_a_time]` -- A function annotation that makes functions run in serial.
- - `one_at_a_time()` -- A function
- - OneAtATime - A struct
-# Usage
+ - `#[one_at_a_time]` -- An annotation to add to functions. Functions marked with this can only be called on one thread at a time. Otherwise they (politely) wait until it's their turn.
+ - `one_at_a_time()` -- A helper function to do this yourself in code. You call it, pass in a lambda, and it will (politely) wait until the lock is free. Then run.
+ - `OneAtATime` - All of the other APIs share one giant lock. This is a struct that allows you to make your own lock, and use that instead.
+
+# Examples
+
+## `#[one_at_a_time]`
 
 ```Rust
+use ::one_at_a_time_please::one_at_a_time;
+
+/// This __cannot__ be called from different threads at the same time.
 #[one_at_a_time]
-fn my_unsafe_function(foo: String, bar: u32) -> f32 {
-  // code omitted
+fn add(a: u32, b: u32) -> u32 {
+    a + b
+}
+```
+
+## `one_at_a_time()`
+
+```Rust
+use ::one_at_a_time_please::one_at_a_time;
+
+/// This __can__ be called from different threads at the same time ...
+fn some_function(a: u32, b: u32) -> u32 {
+    /// but this __cannot__ be called from different threads.
+    one_at_a_time(move || {
+        a + b
+    })
+}
+```
+
+## `OneAtATime`
+
+```Rust
+use ::one_at_a_time_please::one_at_a_time;
+use ::std::sync::Arc;
+
+/// This example is for showing that you can make your own lock,
+/// and block on that.
+///
+/// This is a different lock to what `#[one_at_a_time]` uses.
+/// It's behaviour will not overlap with them.
+#[one_at_a_time]
+fn some_function(a: u32, b: u32) -> u32 {
+    let oaat = Arc::new(OneAtATime::new());
+
+    for i in 0 .. 10 {
+        let thread_local_oaat = oaat.clone();
+        let thread = spawn(move || {
+            for _ in 0..10 {
+                thread_local_oaat.call(|| {
+                    // do stuff here
+                });
+            }
+        });
+    }
 }
 ```

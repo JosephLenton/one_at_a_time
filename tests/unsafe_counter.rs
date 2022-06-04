@@ -1,4 +1,5 @@
 use ::one_at_a_time_please::one_at_a_time;
+use ::one_at_a_time_please::OneAtATime;
 use ::std::cell::UnsafeCell;
 use ::std::sync::Arc;
 use ::std::thread::spawn;
@@ -33,7 +34,34 @@ fn it_should_lock_when_using_unsafe_counter_through_lambda() {
         let thread_local_counter = counter.clone();
         let thread = spawn(move || {
             for _ in 0..100 {
-                ::one_at_a_time_please::one_at_a_time(|| {
+                one_at_a_time(|| {
+                    thread_local_counter.increment();
+                });
+            }
+        });
+
+        threads.push(thread);
+    }
+
+    for thread in threads.into_iter() {
+        thread.join();
+    }
+
+    assert_eq!(counter.get_count(), 10 * 100);
+}
+
+#[test]
+fn it_should_lock_when_using_unsafe_counter_through_struct() {
+    let counter = Arc::new(UnsafeCounter::new());
+    let oaat = Arc::new(OneAtATime::new());
+
+    let mut threads = vec![];
+    for _ in 0..10 {
+        let thread_local_counter = counter.clone();
+        let thread_local_oaat = oaat.clone();
+        let thread = spawn(move || {
+            for _ in 0..100 {
+                thread_local_oaat.call(|| {
                     thread_local_counter.increment();
                 });
             }

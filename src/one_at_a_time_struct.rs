@@ -1,15 +1,16 @@
-use ::parking_lot::Mutex;
-use ::parking_lot::MutexGuard;
+use ::parking_lot::ReentrantMutex;
 use ::std::mem::drop;
 
+use crate::OneAtATimeGuard;
+
 pub struct OneAtATime {
-    inner_lock: Mutex<()>,
+    inner_lock: ReentrantMutex<()>,
 }
 
 impl OneAtATime {
     pub const fn new() -> Self {
         Self {
-            inner_lock: Mutex::new(()),
+            inner_lock: ReentrantMutex::new(()),
         }
     }
 
@@ -24,7 +25,7 @@ impl OneAtATime {
         result
     }
 
-    pub fn lock(&self) -> MutexGuard<()> {
+    pub fn lock(&self) -> OneAtATimeGuard {
         self.inner_lock.lock()
     }
 }
