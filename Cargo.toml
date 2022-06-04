@@ -1,0 +1,8 @@
+[package]
+name = "one_at_a_time_please"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+parking_lot = "0.12.1"
+one_at_a_time_derive = { path = "./one_at_a_time_derive" }
