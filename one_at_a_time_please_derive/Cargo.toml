@@ -1,6 +1,6 @@
 [package]
 name = "one_at_a_time_please_derive"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 keywords = ["thread", "mutex", "once", "called", "rwlock"]
 categories = ["concurrency"]
