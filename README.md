@@ -37,7 +37,7 @@ fn add(a: u32, b: u32) -> u32 {
 }
 ```
 
-### `one_at_a_time()`
+### `one_at_a_time<F>(f: FnOnce() -> R) -> F`
 
 ```Rust
 use ::one_at_a_time_please::one_at_a_time;
@@ -51,7 +51,7 @@ fn some_function(a: u32, b: u32) -> u32 {
 }
 ```
 
-### `OneAtATime`
+### `struct OneAtATime`
 
 ```Rust
 use ::one_at_a_time_please::one_at_a_time;
