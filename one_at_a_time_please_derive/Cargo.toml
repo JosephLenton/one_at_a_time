@@ -1,0 +1,21 @@
+[package]
+name = "one_at_a_time_please_derive"
+version = "1.0.0"
+edition = "2021"
+keywords = ["thread", "mutex", "once", "called", "rwlock"]
+categories = ["concurrency"]
+authors = ["josephlenton@gmail.com <josephlenton@gmail.com>"]
+license = "MIT"
+description = "Derive macro used for serialising calls to functions"
+repository = "https://github.com/JosephLenton/one_at_a_time_please"
+documentation = "https://docs.serde.rs/one_at_a_time_please/"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1.0.39"
+quote = "1.0.18"
+
+[dev-dependencies]
+pretty_assertions = "1.0.0"

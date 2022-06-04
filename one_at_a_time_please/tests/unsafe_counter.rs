@@ -19,7 +19,7 @@ fn it_should_lock_when_using_unsafe_counter_through_proc_attribute() {
     }
 
     for thread in threads.into_iter() {
-        thread.join();
+        thread.join().expect("This thread should join fine.");
     }
 
     assert_eq!(UNSAFE_COUNTER.get_count(), 10 * 100);
@@ -44,7 +44,7 @@ fn it_should_lock_when_using_unsafe_counter_through_lambda() {
     }
 
     for thread in threads.into_iter() {
-        thread.join();
+        thread.join().expect("This thread should join fine.");
     }
 
     assert_eq!(counter.get_count(), 10 * 100);
@@ -71,7 +71,7 @@ fn it_should_lock_when_using_unsafe_counter_through_struct() {
     }
 
     for thread in threads.into_iter() {
-        thread.join();
+        thread.join().expect("This thread should join fine.");
     }
 
     assert_eq!(counter.get_count(), 10 * 100);
