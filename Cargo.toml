@@ -1,7 +1,13 @@
 [package]
 name = "one_at_a_time_please"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+keywords = ["thread", "mutex", "once", "called", "rwlock"]
+categories = ["concurrency"]
+authors = ["josephlenton@gmail.com <josephlenton@gmail.com>"]
+license = "MIT"
+description = "For serialising calls to functions"
+repository = "https://github.com/JosephLenton/one_at_a_time_please"
 
 [dependencies]
 parking_lot = "0.12.1"

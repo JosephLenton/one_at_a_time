@@ -1,3 +1,6 @@
+#![doc = include_str!("./../README.md")]
+#![deny(missing_docs)]
+
 mod one_at_a_time_struct;
 pub use self::one_at_a_time_struct::*;
 
